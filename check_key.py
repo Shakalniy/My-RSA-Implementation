@@ -95,12 +95,12 @@ def equation(a, b, c):
 
 
 def viner_attack(e, n):
-    a, q = divmod(e, n)  # целая и дробная части
+    a, r = divmod(e, n)
     t = n
     res = [a]
-    while q != 0:
-        next_t = q
-        a, q = divmod(t, q)
+    while r != 0:
+        next_t = r
+        a, r = divmod(t, r)
         t = next_t
         res.append(a)
 
@@ -126,19 +126,30 @@ def viner_attack(e, n):
 def check_viner_attack(e, d, n):
     low_lim_e = math.isqrt(n) + 1
     low_lim_d = (math.isqrt(math.isqrt(n) + 1) + 1) // 3
-    reasons = ""
+    reasons = ": "
 
-    if e <= low_lim_e and d <= low_lim_d:
-        print(f"Данная криптосистема не устойчива к атаке Винера:\ne = {e} <= {low_lim_e}\nd = {d} <= {low_lim_d}.")
+    if viner_attack(e, n):
+        if e <= low_lim_e:
+            reasons += f"\ne = {e} <= {low_lim_e}"
+        if d <= low_lim_d:
+            reasons += f"\nd = {d} <= {low_lim_d}"
+        if reasons == "":
+            reasons = ". Атака прошла успешно"
+        print(f"Данная криптосистема не устойчива к атаке Винера{reasons}.")
     else:
-        if viner_attack(e, n):
-            print(f"Данная криптосистема не устойчива к атаке Винера, из-за слишком маленьких p и q.")
+        if e > low_lim_e and d > low_lim_d:
+            print(f"Данная криптосистема устойчива к атаке Винера:\ne = {e} > {low_lim_e}\nd = {d} > {low_lim_d}.")
         else:
-            if e > low_lim_e:
-                reasons += f"\ne = {e} > {low_lim_e}"
-            if d > low_lim_d:
-                reasons += f"\nd = {d} > {low_lim_d}"
-            print(f"Данная криптосистема устойчива к атаке Винера:{reasons}.")
+            print(f"Данная криптосистема устойчива к атаке Винера. Атака провалилась.")
+
+
+def start_re_encryption_attack(e, n):
+    m = random.randint(2, n - 1)
+    c = uni.power(m, e, n)
+    if re_encryption_attack(e, n, c):
+        print(f"Данная криптосистема не устойчива к атаке повторным шифрованием. Атака прошла успешно.")
+    else:
+        print(f"Данная криптосистема устойчива к атаке повторным шифрованием. Атака была провалена.")
 
 
 def re_encryption_attack(e, n, c):
@@ -154,67 +165,55 @@ def re_encryption_attack(e, n, c):
         return True
 
 
-def check_big_prime_divs(p, letter, letter1):
-    if p.bit_length() < 256:
+def check_big_prime_divs(p, letter, letter1, letter2):
+   r = p - 1
+   d = 2
+   k = 1
+   while d * d <= r:
+       if r % d == 0:
+           r //= d
+           k *= d
+       else:
+           d += 1
+
+   if r * k != p - 1 or r * r < p:
+       return False
+
+   print(f"Число {letter} имеет большой простой делитель.")
+   print(f"{letter} - 1 = {letter2} * {letter1} = {k} * {r}.")
+   return r
+
+
+def check_re_encryption_attack(p, letter, letter1):
+    if p.bit_length() < 32:
         print(f"Число {letter} не является большим простым числом.")
         return False
-    phi_p = p - 1
-    k = 2
-    while phi_p % k != 0 or k < math.isqrt(phi_p):
-        if phi_p % k == 0:
-            r = phi_p // k
-            if prime.check_prime(r):
-                break
-        k += 1
 
-    r = phi_p // k
-
-    if not prime.check_prime(r):
-        print(f"Число {letter} не имеет большого простого делителя")
+    r = check_big_prime_divs(p, letter, letter1, "k")
+    if not r:
+        print(f"Число {letter} не имеет большого простого делителя.")
         return False
     else:
-        print(f"Число {letter} имеет большой простой делитель.")
-        print(f"{letter} - 1 = k * {letter1} = {k} * {r}.")
-        phi_r = r - 1
-        k1 = 2
-        while phi_r % k1 != 0 or k1 < math.isqrt(phi_r):
-            if phi_r % k1 == 0:
-                r1 = phi_r // k1
-                if prime.check_prime(r1):
-                    break
-            k1 += 1
-
-        r1 = phi_r // k1
-
-        if not prime.check_prime(r1):
+        r1 = check_big_prime_divs(r, letter1, f"{letter1}1", "k1")
+        if not r1:
             print(f"Число {letter1} не имеет большого простого делителя.")
+            return False
         else:
-            print(f"Число {letter1} имеет большой простой делитель.")
-            print(f"{letter1} - 1 = k1 * {letter1}1 = {k1} * {r1}.")
-
-    return True
+            return True
 
 
-def check_re_encryption_attack(e, n):
-    m = random.randint(2, n - 1)
-    c = uni.power(m, e, n)
-    if re_encryption_attack(e, n, c):
-        print(f"Данная криптосистема не устойчива к атаке повторным шифрованием.")
-    else:
-        print(f"Данная криптосистема устойчива к атаке повторным шифрованием.")
-
-
-def check_defend_to_attacks(p, q, e, d, n, phi_n):
+def check_defend_to_attacks(p, q, e, d):
     print("Проверка устойчивости данной крипосистемы:")
     n = p * q
-    phi_n = (p - 1) * (q - 1)
     if n.bit_length() < 1024:
         print(f"Размер ключей {n.bit_length()} бит не является надёжным, рекомендуется использовать размер ключей не менее 1024 бит.")
 
     check_fermat_attack(p, q, n)
     check_viner_attack(e, d, n)
-    if not (check_big_prime_divs(p, "p", "r") or check_big_prime_divs(q, "q", "s")):
-        check_re_encryption_attack(e, n)
+    check_p = check_re_encryption_attack(p, "p", "r")
+    check_q = check_re_encryption_attack(q, "q", "s")
+    if not (check_p or check_q):
+        start_re_encryption_attack(e, n)
     else:
         print(f"Данная криптосистема устойчива к атаке повторным шифрованием.")
 
@@ -227,11 +226,10 @@ def check_key():
     d = int(input("d = "))
     print("Проверка на корректность введённых данных:")
     if check_primes_is_correct(p, q):
-        n = p * q
         phi_n = (p - 1) * (q - 1)
         if check_exp_is_correct(e, d, phi_n):
             print(suc_mes)
-            check_defend_to_attacks(p, q, e, d, n, phi_n)
+            check_defend_to_attacks(p, q, e, d)
         else:
             print(err_mes)
     else:
