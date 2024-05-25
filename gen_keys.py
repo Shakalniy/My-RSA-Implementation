@@ -18,8 +18,7 @@ def gen_open_exp(n, phi_n, nok):
     return e
 
 
-def gen_secret_exp(e, phi_n, n):
-    min_d = math.isqrt(math.isqrt(n)) // 3
+def gen_secret_exp(e, phi_n):
     d = gcd_extended(phi_n, e)[2]
     if d < 0:
         d += phi_n
@@ -29,6 +28,6 @@ def gen_secret_exp(e, phi_n, n):
 
 def gen_keys(n, phi_n, nok):
     e = gen_open_exp(n, phi_n, nok)
-    d = gen_secret_exp(e, phi_n, n)
+    d = gen_secret_exp(e, phi_n)
     return e, d
 
