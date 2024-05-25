@@ -1,17 +1,17 @@
 import sys
 
 
-sys.setrecursionlimit(3000)
-
-
 def power(x, y, n):
-    if y == 0:
-        return 1
-    temp = power(x, int(y // 2), n)
-    if y % 2 == 0:
-        return (temp * temp) % n
-    else:
-        return (x * temp * temp) % n
+    res, v, c = 1, x, y
+    if c & 1:
+        res = v
+    c >>= 1
+    while c > 0:
+        v = v * v % n
+        if c & 1:
+            res = v * res % n
+        c = c >> 1
+    return res
 
 
 def gcd(a, b):

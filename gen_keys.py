@@ -1,5 +1,15 @@
 import math
+import random
+import universal_functions as uni
 import gen_prime_nums as prime
+
+
+def n_bit_random(n):
+    bits = "1"
+    bit = random.choices(["0", "1"], [0.9, 0.1], k=n - 1)
+    bits += "".join(bit)
+
+    return int(bits, 2)
 
 
 def gcd_extended(num1, num2):
@@ -11,7 +21,10 @@ def gcd_extended(num1, num2):
 
 
 def gen_open_exp(n, phi_n, nok):
-    e = prime.gen_prime_num(phi_n.bit_length() - 1)
+    e = n_bit_random(phi_n.bit_length() - 1)
+    while uni.gcd(e, phi_n) != 1:
+        e = n_bit_random(phi_n.bit_length() - 1)
+
     while e < math.isqrt(n):
         e += nok
 
