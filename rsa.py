@@ -9,6 +9,16 @@ import time
 size = 1024
 
 
+def print_large_num(n):
+    s = str(n)
+    for i in range(0, len(s), 100):
+        if i + 100 < len(s):
+            print(s[i: i + 100])
+        else:
+            print(s[i: i + (len(s) % 100)])
+    return ""
+
+
 def rsa():
     # конвертация текста
     text = input("Введите сообщение: ")
@@ -26,9 +36,9 @@ def rsa():
             is_correct = True
 
     print("Сгенерированные параметры:")
-    print(f"p = {p}")
-    print(f"q = {q}")
-    print(f"n = {n}")
+    print(f"p = {print_large_num(p)}")
+    print(f"q = {print_large_num(q)}")
+    print(f"n = {print_large_num(n)}")
 
     # генерация ключей
     phi_n = (p - 1) * (q - 1)
@@ -37,18 +47,13 @@ def rsa():
     e, d = gen_keys.gen_keys(n, phi_n, nok)
 
     print("Сгенерированное ключи:")
-    print(f"e = {e}")
-    print(f"d = {d}")
+    print(f"e = {print_large_num(e)}")
+    print(f"d = {print_large_num(d)}")
 
     # шифрование
     e_m, m_l, last_l, all_len = encrypt.encrypt(text, e, n)
     print("Зашифрованное сообщение:")
-    s = str(e_m)
-    for i in range(0, len(s), 100):
-        if i + 100 < len(s):
-            print(s[i: i + 100])
-        else:
-            print(s[i: i + (len(s) % 100)])
+    print_large_num(e_m)
     # дешифрование
     de_text = decrypt.decrypt(e_m, d, n, m_l, last_l, all_len)
     print("Расшифрованное сообщение:", de_text)
