@@ -55,14 +55,17 @@ def rsa():
     bytes = convert_file.convert_file_to_bits(file_name, n)
     # шифрование
     e_m, last_l = encrypt.encrypt(bytes, e, n)
-    # print("Зашифрованное сообщение:")
-    # print_large_num(e_m)
     bytes = convert_file.convert_to_bytes(e_m)
     convert_file.write_file(bytes, file_name, "en")
+    print(f"Файл {file_name} зашифрован и записан в файл en_{file_name}.")
     # дешифрование
     de_bits = decrypt.decrypt(e_m, d, p, q, n, last_l)
-    # print("Расшифрованное сообщение:", de_bits)
     bytes = convert_file.convert_to_bytes(de_bits)
     convert_file.write_file(bytes, file_name, "de")
+    print(f"Файл {file_name} зашифрован и записан в файл de_{file_name}.")
 
-    print("Время работы программы:", (time.time() - t).__round__(2))
+    t = (time.time() - t).__round__(2)
+    print("Время работы программы:", t)
+
+    return t
+

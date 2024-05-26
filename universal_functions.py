@@ -1,17 +1,13 @@
-import sys
-
-
 def power(x, y, n):
-    res, v, c = 1, x, y
-    if c & 1:
-        res = v
-    c >>= 1
-    while c > 0:
-        v = v * v % n
-        if c & 1:
-            res = v * res % n
-        c = c >> 1
-    return res
+    c = 1
+    while y > 0:
+        if y % 2 == 0:
+            x = (x * x) % n
+            y = y >> 1
+        else:
+            c = (c * x) % n
+            y -= 1
+    return c
 
 
 def gcd(a, b):

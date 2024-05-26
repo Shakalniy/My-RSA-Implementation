@@ -1,7 +1,6 @@
 import math
 import random
 import universal_functions as uni
-import gen_prime_nums as prime
 
 
 def n_bit_random(n):

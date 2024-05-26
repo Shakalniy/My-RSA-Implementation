@@ -1,6 +1,6 @@
 def open_file(file):
     with open(file, 'rb') as f:
-        file_code = f.read()  # чтение файла по битово
+        file_code = f.read()  # чтение файла по байтово
 
     return file_code
 

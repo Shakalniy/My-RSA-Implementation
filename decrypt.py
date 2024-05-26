@@ -2,7 +2,7 @@ import universal_functions as uni
 import gen_keys
 
 
-def kto(c, d, p, q, n):
+def crt(c, d, p, q, n):
     d_p = d % (p - 1)
     d_q = d % (q - 1)
 
@@ -24,8 +24,7 @@ def decrypt(bits, d, p, q, n, last_l):
         c = bits[i: i + max_len]
 
         c = int(c, 2)
-        # m = uni.power(c, d, n)
-        m = kto(c, d, p, q, n)
+        m = crt(c, d, p, q, n)
         if i + max_len == len(bits):
             de_bits += format(m, f'0{last_l}b')
         else:

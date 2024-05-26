@@ -173,6 +173,8 @@ def check_big_prime_divs(p, letter, letter1, letter2):
        if r % d == 0:
            r //= d
            k *= d
+           if prime.check_prime(r):
+               break
        else:
            d += 1
 
@@ -207,6 +209,8 @@ def check_defend_to_attacks(p, q, e, d):
     n = p * q
     if n.bit_length() < 1024:
         print(f"Размер ключей {n.bit_length()} бит не является надёжным, рекомендуется использовать размер ключей не менее 1024 бит.")
+    else:
+        print(f"Размер ключей {n.bit_length()} бит считается надёжным.")
 
     check_fermat_attack(p, q, n)
     check_viner_attack(e, d, n)

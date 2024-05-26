@@ -13,7 +13,6 @@ def encrypt(bits, e, n):
         else:
             m = bits[i: len(bits)]
             last_l = len(m)
-
         m = int(m, 2)
         c = uni.power(m, e, n)
         en_bits += format(c, f'0{max_len + 1}b')
